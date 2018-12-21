@@ -1,15 +1,27 @@
 require "call_logger/version"
 
+require 'call_logger/formatter'
+require 'call_logger/logger'
+require 'call_logger/configuration'
+require 'call_logger/call_logger'
+
 module CallLogger
   def self.included(base)
     base.extend(ClassMethods)
   end
 
-  def log(method, args)
-    puts "Method #{method} called with #{args}"
-    result = yield
-    puts "Method #{method} returned #{result}"
-    result
+  class << self
+    attr_accessor :configuration
+  end
+
+  def self.configure
+    self.configuration ||= Configuration.new
+    yield(configuration)
+  end
+
+  def log(method, args, &block)
+    call_logger = ::CallLogger::CallLogger.new(logger: ::CallLogger.configuration.logger, formatter: ::CallLogger.configuration.formatter)
+    call_logger.log(method, args, &block)
   end
 
   module ClassMethods
