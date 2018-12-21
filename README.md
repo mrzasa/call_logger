@@ -1,8 +1,21 @@
 # CallLogger
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/call_logger`. To experiment with that code, run `bin/console` for an interactive prompt.
+A debugging tool that let you log method usage.
 
-TODO: Delete this and the text above, and describe your gem
+```
+class Calculator
+  include CallLogger
+
+  log def times(a, b)
+    a*b
+  end
+end
+
+Calculator.new.times(3,4)
+# times(2, 3)
+# times => 6
+# => 7
+```
 
 ## Installation
 
@@ -22,7 +35,56 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Include it to a class being debugged and the prepend a method definition with `log`:
+
+```
+class Calculator
+  include CallLogger
+
+  log def times(a, b)
+    a*b
+  end
+end
+```
+
+`.log` accepts method name, so you can pass it explicitly:
+
+```
+class Calculator
+  include CallLogger
+
+  def times(a, b)
+    a*b
+  end
+
+  log :times
+end
+```
+
+### Configuration
+
+There are two pluggable components: `Logger` and `Formatter`. `Formatter` preperes messages to be printed and `Logger` sents them to the
+output stream (whatever it is). This documentation uses default ones, but they can be easily configured:
+
+```
+::CallLogger.configure do |config|
+  config.logger = CustomLogger.new
+  config.formatter = CustomFormatter.new
+end
+```
+
+* `Logger` should provide a `#call` method accepting a single paramter.
+* `Formatter` should provide two methods:
+  * `#begin_message(method, args)` - accepting method name and it's arguments; called before method execution
+  * `#end_message(method, result)` - accepting method name and it's result; called after method execution
+
+## TODO
+
+* [] class methods
+* [] multiple method names
+* [] handle blocks
+* [] logging all methods defined in the class
+* [] doc: Rails integration
 
 ## Development
 
