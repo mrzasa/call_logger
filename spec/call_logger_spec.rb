@@ -1,9 +1,13 @@
 RSpec.describe CallLogger do
-  it "has a version number" do
-    expect(CallLogger::VERSION).not_to be nil
+  class TestClass
+    include CallLogger
+
+    log def times(a, b)
+      a*b
+    end
   end
 
-  it "does something useful" do
-    expect(false).to eq(true)
+  it 'does not change return type' do
+    expect(TestClass.new.times(2,3)).to eq(6)
   end
 end
