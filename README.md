@@ -1,6 +1,6 @@
 # CallLogger
 
-A debugging tool that let you log method usage.
+A debugging tool that lets you log method usage.
 
 ```
 class Calculator
@@ -9,12 +9,21 @@ class Calculator
   log def times(a, b)
     a*b
   end
+
+  log def div(a, b)
+    a/b
+  end
 end
 
 Calculator.new.times(3,4)
-# times(2, 3)
+# times(3, 4)
 # times => 6
 # => 7
+
+Calculator.new.div(3,0)
+# div(3, 0)
+# div !! divided by 0
+# ZeroDivisionError: divided by 0
 ```
 
 ## Installation
@@ -74,9 +83,10 @@ end
 ```
 
 * `Logger` should provide a `#call` method accepting a single paramter.
-* `Formatter` should provide two methods:
-  * `#begin_message(method, args)` - accepting method name and it's arguments; called before method execution
-  * `#end_message(method, result)` - accepting method name and it's result; called after method execution
+* `Formatter` should provide following methods:
+  * `#before(method, args)` - accepting method name and it's arguments; called before method execution
+  * `#after(method, result)` - accepting method name and it's result; called after method execution
+  * `#error(method, exception)` - accepting method name and an exception; called when error is raised
 
 ## TODO
 

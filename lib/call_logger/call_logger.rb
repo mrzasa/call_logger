@@ -8,10 +8,13 @@ module CallLogger
     end
 
     def log(method, args)
-      logger.call(formatter.begin_message(method, args))
+      logger.call(formatter.before(method, args))
       result = yield
-      logger.call(formatter.end_message(method, result))
+      logger.call(formatter.after(method, result))
       result
+    rescue StandardError => e
+      logger.call(formatter.error(method, e))
+      raise
     end
   end
 end

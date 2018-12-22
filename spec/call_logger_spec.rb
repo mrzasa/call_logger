@@ -5,6 +5,10 @@ RSpec.describe CallLogger do
     log def times(a, b)
       a*b
     end
+
+    log def div(a, b)
+      a/b
+    end
   end
 
   before do
@@ -22,12 +26,16 @@ RSpec.describe CallLogger do
     let(:logger) { double(:logger)}
     let(:formatter_class) do
       Class.new do
-        def begin_message(method, args)
+        def before(method, args)
           "#{method}: #{args.join(',')}"
         end
 
-        def end_message(method, result)
+        def after(method, result)
           "#{method}=#{result}"
+        end
+
+        def error(method, exception)
+          "#{method}!#{exception}"
         end
       end
     end
@@ -44,6 +52,13 @@ RSpec.describe CallLogger do
       expect(logger).to receive(:call).with("times=6")
 
       expect(TestClass.new.times(2,3)).to eq(6)
+    end
+
+    it 'calls logger when exception occured' do
+      expect(logger).to receive(:call).with("div: 3,0")
+      expect(logger).to receive(:call).with("div!divided by 0")
+
+      expect { TestClass.new.div(3,0) }.to raise_error ZeroDivisionError
     end
   end
 end

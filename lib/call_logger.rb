@@ -16,7 +16,7 @@ module CallLogger
 
   def self.configure
     self.configuration ||= Configuration.new
-    yield(configuration)
+    yield(configuration) if block_given?
   end
 
   def log(method, args, &block)

@@ -1,12 +1,16 @@
 module CallLogger
   class Formatter
-    def begin_message(method, args)
+    def before(method, args)
       "#{method}(#{args.join(', ')})"
     end
 
     # args?
-    def end_message(method, result)
+    def after(method, result)
       "#{method} => #{result}"
+    end
+
+    def error(method, exception)
+      "#{method} !! #{exception}"
     end
   end
 end
