@@ -1,5 +1,5 @@
 module CallLogger
-  class CallLogger
+  class MethodWrapper
     attr_reader :formatter, :logger
 
     def initialize(formatter:, logger: )
@@ -7,7 +7,7 @@ module CallLogger
       @logger = logger
     end
 
-    def log(method, args)
+    def call(method, args)
       logger.call(formatter.before(method, args))
       result = yield
       logger.call(formatter.after(method, result))
