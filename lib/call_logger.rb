@@ -18,10 +18,15 @@ module CallLogger
     self.configuration ||= Configuration.new
     yield(configuration) if block_given?
   end
+  configure # set defaults
 
   def log(method, args, &block)
-    call_logger = ::CallLogger::CallLogger.new(logger: ::CallLogger.configuration.logger, formatter: ::CallLogger.configuration.formatter)
-    call_logger.log(method, args, &block)
+    logger = ::CallLogger.configuration.logger
+    formatter = ::CallLogger.configuration.formatter
+    method_wrapper = ::CallLogger::MethodWrapper.new(
+      logger: logger, formatter: formatter
+    )
+    method_wrapper.call(method, args, &block)
   end
 
   module ClassMethods
