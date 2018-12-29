@@ -4,7 +4,6 @@ module CallLogger
       "#{method}(#{args.join(', ')})"
     end
 
-    # args?
     def after(method, result)
       "#{method} => #{result}"
     end

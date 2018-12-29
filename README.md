@@ -13,17 +13,25 @@ class Calculator
   log def div(a, b)
     a/b
   end
+
+  log_class def self.info(msg)
+    "Showing: #{msg}"
+  end
 end
 
 Calculator.new.times(3,4)
-# times(3, 4)
-# times => 6
+# Calculator#times(3, 4)
+# Calculator#times => 6
 # => 7
 
 Calculator.new.div(3,0)
-# div(3, 0)
-# div !! divided by 0
+# Calculator#div(3, 0)
+# Calculator#div !! divided by 0
 # ZeroDivisionError: divided by 0
+
+Calculator.info("hello!")
+# Calculator.info(hello)
+# Calculator.info => "Showing: hello"
 ```
 
 ## Installation
@@ -70,6 +78,19 @@ class Calculator
 end
 ```
 
+If you want to log class method calls, prepend them with `.log_class`:
+
+```
+class Calculator
+  include CallLogger
+
+  log_class def self.times(a, b)
+    a*b
+  end
+end
+```
+
+
 ### Configuration
 
 There are two pluggable components: `Logger` and `Formatter`. `Formatter` preperes messages to be printed and `Logger` sents them to the
@@ -90,11 +111,13 @@ end
 
 ## TODO
 
-* [] class methods
+* [+] class methods
 * [] multiple method names
 * [] handle blocks
 * [] logging all methods defined in the class
 * [] doc: Rails integration
+* [] doc: API docs
+* [] infra: travis
 
 ## Development
 

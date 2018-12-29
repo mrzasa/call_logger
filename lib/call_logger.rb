@@ -20,23 +20,33 @@ module CallLogger
   end
   configure # set defaults
 
-  def log(method, args, &block)
-    logger = ::CallLogger.configuration.logger
-    formatter = ::CallLogger.configuration.formatter
-    method_wrapper = ::CallLogger::MethodWrapper.new(
-      logger: logger, formatter: formatter
-    )
-    method_wrapper.call(method, args, &block)
-  end
 
   module ClassMethods
     def log(method)
       alias_method "#{method}_without_log", method
       define_method method do |*args|
-        log(method, args) do
+        self.class.do_log("#{self.class}##{method}", args) do
           send("#{method}_without_log", *args)
         end
       end
+    end
+
+    def log_class(method)
+      singleton_class.alias_method "#{method}_without_log", method
+      singleton_class.define_method method do |*args|
+        do_log("#{self}.#{method}", args) do
+          send("#{method}_without_log", *args)
+        end
+      end
+    end
+
+    def do_log(method, args, &block)
+      logger = ::CallLogger.configuration.logger
+      formatter = ::CallLogger.configuration.formatter
+      method_wrapper = ::CallLogger::MethodWrapper.new(
+        logger: logger, formatter: formatter
+      )
+      method_wrapper.call(method, args, &block)
     end
   end
 end
