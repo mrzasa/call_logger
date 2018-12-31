@@ -22,11 +22,36 @@ module CallLogger
 
 
   module ClassMethods
-    def log(method)
-      alias_method "#{method}_without_log", method
-      define_method method do |*args|
-        self.class.do_log("#{self.class}##{method}", args) do
-          send("#{method}_without_log", *args)
+    def log(*methods)
+      if methods.size == 1
+        method = methods.first
+        alias_method "#{method}_without_log", method
+        define_method method do |*args|
+          self.class.do_log("#{self.class}##{method}", args) do
+            send("#{method}_without_log", *args)
+          end
+        end
+      else
+        self.prepend(Module.new do
+          methods.each do |method|
+            define_method method do |*args|
+              self.class.do_log("#{self.class}##{method}", args) do
+                super(*args)
+              end
+            end
+          end
+        end)
+      end
+    end
+
+    #http://blog.jayfields.com/2008/04/alternatives-for-redefining-methods.html
+    def new_log(*methods)
+      methods.each do |method|
+        old_method = instance_method(method)
+        define_method method do |*args|
+          self.class.do_log("#{self.class}##{method}", args) do
+            old_method.bind(self).call(*args)
+          end
         end
       end
     end
