@@ -52,6 +52,8 @@ Or install it yourself as:
 
 ## Usage
 
+### Wrapping a single method
+
 Include it to a class being debugged and the prepend a method definition with `log`:
 
 ```
@@ -89,7 +91,41 @@ class Calculator
   end
 end
 ```
+### Wrapping multiple methods
 
+You can also pass multiple method names to `.log` and `.log_class` to wrap them all:
+
+```
+class Calculator
+  include CallLogger
+
+  log :times, :div
+
+  def times(a, b)
+    a*b
+  end
+
+  def div(a, b)
+    a/b
+  end
+end
+```
+
+```
+class Calculator
+  include CallLogger
+
+  log_class :times, :div
+
+  def self.times(a, b)
+    a*b
+  end
+
+  def self.div(a, b)
+    a/b
+  end
+end
+```
 
 ### Configuration
 
