@@ -4,7 +4,7 @@ require 'call_logger/formatter'
 require 'call_logger/logger'
 require 'call_logger/configuration'
 require 'call_logger/call_wrapper'
-require 'call_logger/method_wrapper_builder'
+require 'call_logger/method_wrapper'
 
 module CallLogger
   def self.included(base)
@@ -39,11 +39,11 @@ module CallLogger
     end
 
     def wrap_log(owner, methods)
-      builder = MethodWrapperBuilder.new(owner, self)
+      wrapper = MethodWrapper.new(owner, self)
       if methods.size == 1 && owner.respond_to?(methods.first)
-        builder.wrap_single(methods.first)
+        wrapper.wrap_single(methods.first)
       else
-        builder.wrap_multi(methods)
+        wrapper.wrap_multiple(methods)
       end
     end
 

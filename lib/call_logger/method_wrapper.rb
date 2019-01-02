@@ -1,5 +1,5 @@
 module CallLogger
-  class MethodWrapperBuilder
+  class MethodWrapper
     attr_reader :extended_class, :owner_class
 
     def initialize(extended_class, owner_class)
@@ -18,7 +18,7 @@ module CallLogger
       end
     end
 
-    def wrap_multi(methods)
+    def wrap_multiple(methods)
       extended_class.prepend(build_module(methods))
     end
 
