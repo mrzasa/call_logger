@@ -2,6 +2,9 @@
 
 A debugging tool that lets you log method usage.
 
+[![Build status](https://travis-ci.org/mrzasa/call_logger.svg?branch=master)](https://travis-ci.org/mrzasa/call_logger)
+[![Maintainability](https://api.codeclimate.com/v1/badges/55bd374e1cd20af702ed/maintainability)](https://codeclimate.com/github/mrzasa/call_logger/maintainability)
+
 ```
 class Calculator
   include CallLogger
