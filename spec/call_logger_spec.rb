@@ -84,7 +84,7 @@ RSpec.describe CallLogger do
       include CallLogger
 
       log :times, :div
-      #log_class :info, :calc_name
+      log_class :info, :calc_name
 
       def times(a, b)
         a*b
@@ -127,6 +127,20 @@ RSpec.describe CallLogger do
       expect(TestClassMulti.new.add(3,1)).to eq(4)
     end
 
-    it 'logs calls on multiple class method names'
+    it 'logs calls on multiple class method names' do
+      expect(logger).to receive(:call).with("TestClassMulti.info: a")
+      expect(logger).to receive(:call).with("TestClassMulti.info=TestClassMulti a")
+
+      expect(TestClassMulti.info('a')).to eq('TestClassMulti a')
+
+      expect(logger).to receive(:call).with("TestClassMulti.calc_name: ")
+      expect(logger).to receive(:call).with("TestClassMulti.calc_name=multi")
+
+      expect(TestClassMulti.calc_name).to eq('multi')
+
+      expect(logger).not_to receive(:call)
+
+      expect(TestClassMulti.pi).to eq(3.141592)
+    end
   end
 end
