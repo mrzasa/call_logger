@@ -1,5 +1,5 @@
 module CallLogger
-  class MethodWrapper
+  class CallWrapper
     attr_reader :formatter, :logger
 
     def initialize(formatter:, logger: )
@@ -7,13 +7,13 @@ module CallLogger
       @logger = logger
     end
 
-    def call(method, args)
-      logger.call(formatter.before(method, args))
+    def call(name, args)
+      logger.call(formatter.before(name, args))
       result = yield
-      logger.call(formatter.after(method, result))
+      logger.call(formatter.after(name, result))
       result
     rescue StandardError => e
-      logger.call(formatter.error(method, e))
+      logger.call(formatter.error(name, e))
       raise
     end
   end

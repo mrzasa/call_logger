@@ -220,4 +220,8 @@ RSpec.describe CallLogger do
       expect(TestBlock.info('a')).to eq('TestBlock a')
     end
   end
+
+  context "without including a module" do
+
+  end
 end

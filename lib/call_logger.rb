@@ -3,7 +3,7 @@ require "call_logger/version"
 require 'call_logger/formatter'
 require 'call_logger/logger'
 require 'call_logger/configuration'
-require 'call_logger/method_wrapper'
+require 'call_logger/call_wrapper'
 require 'call_logger/method_wrapper_builder'
 
 module CallLogger
@@ -50,10 +50,10 @@ module CallLogger
     def do_log(method, args, &block)
       logger = ::CallLogger.configuration.logger
       formatter = ::CallLogger.configuration.formatter
-      method_wrapper = ::CallLogger::MethodWrapper.new(
+      call_wrapper = ::CallLogger::CallWrapper.new(
         logger: logger, formatter: formatter
       )
-      method_wrapper.call(method, args, &block)
+      call_wrapper.call(method, args, &block)
     end
   end
 end
