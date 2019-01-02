@@ -21,6 +21,9 @@ module CallLogger
   end
   configure # set defaults
 
+  def log_block(name, &block)
+    self.class.log_block(name, &block)
+  end
 
   module ClassMethods
     def log(*methods)
@@ -29,6 +32,10 @@ module CallLogger
 
     def log_class(*methods)
       wrap_log(singleton_class, methods)
+    end
+
+    def log_block(name, &block)
+      do_log(name, [], &block)
     end
 
     def wrap_log(owner, methods)

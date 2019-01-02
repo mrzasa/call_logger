@@ -181,4 +181,43 @@ RSpec.describe CallLogger do
       expect(TestClassSingleAhead.info('a')).to eq('TestClassSingleAhead a')
     end
   end
+
+  context "with blocks" do
+    before do
+      ::CallLogger.configure do |config|
+        config.logger = logger
+        config.formatter = formatter_class.new
+      end
+    end
+
+    class TestBlock
+      include CallLogger
+
+      def times(a, b)
+        log_block('multiplication') do
+          a*b
+        end
+      end
+
+      def self.info(a)
+        log_block('information') do
+          "#{self} #{a}"
+        end
+      end
+    end
+
+    it 'logs block in instance method' do
+      expect(logger).to receive(:call).with("multiplication: ")
+      expect(logger).to receive(:call).with("multiplication=6")
+
+      expect(TestBlock.new.times(2,3)).to eq(6)
+    end
+
+    it 'logs block in class method' do
+      expect(logger).to receive(:call).with("information: ")
+      expect(logger).to receive(:call).with("information=TestBlock a")
+
+      expect(TestBlock.info('a')).to eq('TestBlock a')
+    end
+  end
 end

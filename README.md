@@ -22,7 +22,7 @@ end
 Calculator.new.times(3,4)
 # Calculator#times(3, 4)
 # Calculator#times => 6
-# => 7
+# => 6
 
 Calculator.new.div(3,0)
 # Calculator#div(3, 0)
@@ -125,6 +125,27 @@ class Calculator
     a/b
   end
 end
+```
+
+### Wrapping a block
+
+You can wrap a block of code using `#log_block` (in instance methods) or `.log_block` (in class methods). Block parameters will not be logged though:
+
+```
+class Calculator
+  include CallLogger
+
+  def times(a, b)
+    log_block('multiply')
+      a*b
+    end
+  end
+end
+
+Calculator.new.times(3,4)
+# multiply
+# multiply => 6
+# => 6
 ```
 
 ### Configuration
