@@ -143,4 +143,42 @@ RSpec.describe CallLogger do
       expect(TestClassMulti.pi).to eq(3.141592)
     end
   end
+
+  context "with single method wrapped before definition" do
+    before do
+      ::CallLogger.configure do |config|
+        config.logger = logger
+        config.formatter = formatter_class.new
+      end
+    end
+
+    class TestClassSingleAhead
+      include CallLogger
+
+      log :times
+      log_class :info
+
+      def times(a, b)
+        a*b
+      end
+
+      def self.info(a)
+        "#{self} #{a}"
+      end
+    end
+
+    it 'logs calls on instance method' do
+      expect(logger).to receive(:call).with("TestClassSingleAhead#times: 2,3")
+      expect(logger).to receive(:call).with("TestClassSingleAhead#times=6")
+
+      expect(TestClassSingleAhead.new.times(2,3)).to eq(6)
+    end
+
+    it 'logs calls on class method' do
+      expect(logger).to receive(:call).with("TestClassSingleAhead.info: a")
+      expect(logger).to receive(:call).with("TestClassSingleAhead.info=TestClassSingleAhead a")
+
+      expect(TestClassSingleAhead.info('a')).to eq('TestClassSingleAhead a')
+    end
+  end
 end

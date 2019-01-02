@@ -31,12 +31,12 @@ module CallLogger
       wrap_log(singleton_class, methods)
     end
 
-    def wrap_log(klass, methods)
-      current_class = self
-      if methods.size == 1
-        MethodWrapperBuilder.new(klass, current_class).wrap_single(methods.first)
+    def wrap_log(owner, methods)
+      builder = MethodWrapperBuilder.new(owner, self)
+      if methods.size == 1 && owner.respond_to?(methods.first)
+        builder.wrap_single(methods.first)
       else
-        MethodWrapperBuilder.new(klass, current_class).wrap_multi(methods)
+        builder.wrap_multi(methods)
       end
     end
 

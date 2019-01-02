@@ -1,40 +1,48 @@
 module CallLogger
   class MethodWrapperBuilder
-    attr_reader :klass, :wrapped_class
+    attr_reader :extended_class, :owner_class
 
-    def initialize(klass, wrapped_class)
-      @klass = klass
-      @wrapped_class = wrapped_class
+    def initialize(extended_class, owner_class)
+      @extended_class = extended_class
+      @owner_class = owner_class
     end
 
     def wrap_single(method)
-      builder = self
-      klass.alias_method "#{method}_without_log", method
-      klass.define_method method do |*args|
-        builder.wrapped_class.do_log("#{builder.wrapped_class}#{builder.separator}#{method}", args) do
+      owner = @owner_class
+      sep = separator
+      extended_class.alias_method "#{method}_without_log", method
+      extended_class.define_method method do |*args|
+        owner.do_log("#{owner}#{sep}#{method}", args) do
           send("#{method}_without_log", *args)
         end
       end
     end
 
     def wrap_multi(methods)
-      builder = self
-      klass.prepend(Module.new do
+      extended_class.prepend(build_module(methods))
+    end
+
+    private
+
+    def separator
+      if extended_class.singleton_class?
+        '.'
+      else
+        '#'
+      end
+    end
+
+    def build_module(methods)
+      owner = @owner_class
+      sep = separator
+      Module.new do
         methods.each do |method|
           define_method method do |*args|
-            builder.wrapped_class.do_log("#{builder.wrapped_class}#{builder.separator}#{method}", args) do
+            owner.do_log("#{owner}#{sep}#{method}", args) do
               super(*args)
             end
           end
         end
-      end)
-    end
-
-    def separator
-      if klass.singleton_class?
-        '.'
-      else
-        '#'
       end
     end
   end
