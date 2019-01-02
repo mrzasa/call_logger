@@ -222,6 +222,22 @@ RSpec.describe CallLogger do
   end
 
   context "without including a module" do
+    before do
+      ::CallLogger.configure do |config|
+        config.logger = logger
+        config.formatter = formatter_class.new
+      end
+    end
 
+    it 'logs calls without using a module' do
+      expect(logger).to receive(:call).with("multiplication: ")
+      expect(logger).to receive(:call).with("multiplication=6")
+
+      result = ::CallLogger.log_block('multiplication') do
+        2*3
+      end
+
+      expect(result).to eq(6)
+    end
   end
 end

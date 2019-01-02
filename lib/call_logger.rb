@@ -25,6 +25,15 @@ module CallLogger
     self.class.log_block(name, &block)
   end
 
+  def self.log_block(name, &block)
+    logger = configuration.logger
+    formatter = configuration.formatter
+    call_wrapper = CallWrapper.new(
+      logger: logger, formatter: formatter
+    )
+    call_wrapper.call(name, [], &block)
+  end
+
   module ClassMethods
     def log(*methods)
       wrap_log(self, methods)
@@ -47,13 +56,13 @@ module CallLogger
       end
     end
 
-    def do_log(method, args, &block)
+    def do_log(name, args, &block)
       logger = ::CallLogger.configuration.logger
       formatter = ::CallLogger.configuration.formatter
-      call_wrapper = ::CallLogger::CallWrapper.new(
+      call_wrapper = CallWrapper.new(
         logger: logger, formatter: formatter
       )
-      call_wrapper.call(method, args, &block)
+      call_wrapper.call(name, args, &block)
     end
   end
 end

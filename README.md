@@ -148,6 +148,18 @@ Calculator.new.times(3,4)
 # => 6
 ```
 
+Block calls may be also logged without including `CallLogger` module with `CallLogger.log_block`:
+
+```
+log_block('multiply')
+  a*b
+end
+Calculator.new.times(3,4)
+# multiply
+# multiply => 6
+# => 6
+```
+
 ### Configuration
 
 There are two pluggable components: `Logger` and `Formatter`. `Formatter` preperes messages to be printed and `Logger` sents them to the
@@ -169,8 +181,8 @@ end
 ## TODO
 
 * [+] class methods
-* [] multiple method names
-* [] handle blocks
+* [+] multiple method names
+* [+] handle blocks
 * [] logging all methods defined in the class
 * [] doc: Rails integration
 * [] doc: API docs
