@@ -7,7 +7,7 @@ RSpec.describe CallLogger do
         "#{method}: #{args.join(',')}"
       end
 
-      def after(method, result)
+      def after(method, result, **kwargs)
         "#{method}=#{result}"
       end
 
@@ -28,7 +28,6 @@ RSpec.describe CallLogger do
       log def div(a, b)
         a/b
       end
-
 
       log_class def self.info(a)
         "#{self} #{a}"
@@ -68,6 +67,43 @@ RSpec.describe CallLogger do
         expect(logger).to receive(:call).with("TestClass.info=TestClass a")
 
         expect(TestClass.info('a')).to eq("TestClass a")
+      end
+    end
+
+    context "with benchmark" do
+      before do
+        ::CallLogger.configure do |config|
+          config.logger = logger
+          config.formatter = formatter_class.new
+        end
+      end
+      let(:formatter_class) do
+        Class.new do
+          def before(method, args)
+            "#{method}: #{args.join(',')}"
+          end
+
+          def after(method, result, seconds: nil)
+            "#{method}=#{result}. Took: #{seconds}s"
+          end
+
+          def error(method, exception)
+            "#{method}!#{exception}"
+          end
+        end
+      end
+      let(:seconds) { 123 }
+
+      it 'calls logger on class methods' do
+        expect(logger).to receive(:call).with("TestClass#times: 2,3")
+        expect(logger).to receive(:call) do |message|
+          seconds = message.match(/Took: ([^s]+)s/)
+          expect(seconds[1].to_f).to be > 0
+        end
+
+        allow(Benchmark).to receive(:realtime).and_call_original
+
+        TestClass.new.times(2, 3)
       end
     end
   end

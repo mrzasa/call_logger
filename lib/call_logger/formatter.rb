@@ -4,8 +4,8 @@ module CallLogger
       "#{method}(#{args.join(', ')})"
     end
 
-    def after(method, result)
-      "#{method} => #{result}"
+    def after(method, result, seconds: nil)
+      "#{method} => #{result}, [Took: #{seconds}s]"
     end
 
     def error(method, exception)

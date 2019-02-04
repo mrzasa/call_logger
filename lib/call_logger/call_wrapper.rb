@@ -1,3 +1,5 @@
+require 'benchmark'
+
 module CallLogger
   class CallWrapper
     attr_reader :formatter, :logger
@@ -9,8 +11,9 @@ module CallLogger
 
     def call(name, args)
       logger.call(formatter.before(name, args))
-      result = yield
-      logger.call(formatter.after(name, result))
+      result = nil
+      seconds = Benchmark.realtime { result = yield }
+      logger.call(formatter.after(name, result, seconds: seconds))
       result
     rescue StandardError => e
       logger.call(formatter.error(name, e))
