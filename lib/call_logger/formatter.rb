@@ -5,7 +5,7 @@ module CallLogger
     end
 
     def after(method, result, seconds: nil)
-      "#{method} => #{result}, [Took: #{seconds}s]"
+      "#{method} => #{result}, [Took: #{'%.6f' % seconds}s]"
     end
 
     def error(method, exception)

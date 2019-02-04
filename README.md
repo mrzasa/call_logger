@@ -5,6 +5,9 @@ A debugging tool that lets you log method usage.
 [![Build status](https://travis-ci.org/mrzasa/call_logger.svg?branch=master)](https://travis-ci.org/mrzasa/call_logger)
 [![Maintainability](https://api.codeclimate.com/v1/badges/55bd374e1cd20af702ed/maintainability)](https://codeclimate.com/github/mrzasa/call_logger/maintainability)
 
+In the default setting, a method is logged before call with arguments and after the call with result and time call took (in seconds).
+A message is also logged on execution error.
+
 ```
 class Calculator
   include CallLogger
@@ -17,6 +20,11 @@ class Calculator
     a/b
   end
 
+  log def slow_square(a)
+    sleep a
+    a * a
+  end
+
   log_class def self.info(msg)
     "Showing: #{msg}"
   end
@@ -24,7 +32,7 @@ end
 
 Calculator.new.times(3,4)
 # Calculator#times(3, 4)
-# Calculator#times => 6
+# Calculator#times => 6, [Took: 0.000011s]
 # => 6
 
 Calculator.new.div(3,0)
@@ -34,7 +42,12 @@ Calculator.new.div(3,0)
 
 Calculator.info("hello!")
 # Calculator.info(hello)
-# Calculator.info => "Showing: hello"
+# Calculator.info => "Showing: hello", [Took: 0.000011s]
+
+
+Calculator.new.slow_square(2)
+# Calculator#slow_square(2)
+# Calculator#slow_square => 4, [Took: 2.000117s]
 ```
 
 ## Installation
@@ -147,7 +160,7 @@ end
 
 Calculator.new.times(3,4)
 # multiply
-# multiply => 6
+# multiply => 6, [Took: 0.000011s]
 # => 6
 ```
 
@@ -159,7 +172,7 @@ log_block('multiply')
 end
 Calculator.new.times(3,4)
 # multiply
-# multiply => 6
+# multiply => 6, [Took: 0.000011s]
 # => 6
 ```
 
@@ -178,7 +191,7 @@ end
 * `Logger` should provide a `#call` method accepting a single paramter.
 * `Formatter` should provide following methods:
   * `#before(method, args)` - accepting method name and it's arguments; called before method execution
-  * `#after(method, result)` - accepting method name and it's result; called after method execution
+  * `#after(method, result, seconds: nil)` - accepting method name, it's result and seconds took execution as a KV param; called after method execution
   * `#error(method, exception)` - accepting method name and an exception; called when error is raised
 
 ## TODO
@@ -189,7 +202,7 @@ end
 * [] logging all methods defined in the class
 * [] doc: Rails integration
 * [] doc: API docs
-* [] infra: travis
+* [+] infra: travis
 
 ## Development
 
